@@ -31,7 +31,9 @@ import { Button, Form, FormItem, Input, Message, Select,
   CascaderPanel,
   // Drawer,
   Dialog,
-  Link
+  Link,
+  Carousel,
+  CarouselItem
 } from 'element-ui'
 
 Vue.use(Aside)
@@ -46,7 +48,8 @@ Vue.use(CascaderPanel)
 
 Vue.use(Col)
 Vue.use(Container)
-
+Vue.use(Carousel)
+Vue.use(CarouselItem)
 // Vue.use(Drawer)
 Vue.use(Dropdown)
 Vue.use(DropdownMenu)
