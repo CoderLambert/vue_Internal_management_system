@@ -12,43 +12,43 @@
         label-width="70px"
         class="register-box-form"
         >
-        <el-form-item prop="username" label="用户名">
+        <el-form-item prop="username" :error="ErroMessage.username" label="用户名">
           <el-input type="text" v-model="registerForm.username" prefix-icon="icon iconfont icon-user"></el-input>
         </el-form-item>
-        <el-form-item prop="password" label="密码">
+        <el-form-item prop="password" :error="ErroMessage.password" label="密码">
           <el-input type="password" v-model="registerForm.password" prefix-icon="icon iconfont icon-3702mima"></el-input>
         </el-form-item>
 
-        <el-form-item prop="email" label="邮箱">
+        <el-form-item prop="email" :error="ErroMessage.email" label="邮箱">
           <el-input type="email" v-model="registerForm.email" prefix-icon="el-icon-message" @keyup.enter.native="register"></el-input>
         </el-form-item>
 
-        <el-form-item prop="department" label="部门">
+        <el-form-item prop="department" :error="ErroMessage.department" label="部门">
 
-          <el-select v-model="registerForm.department" placeholder="请选择">
+          <el-select v-model="registerForm.department" multiple placeholder="请选择">
             <el-option
               v-for="item in department_options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
 
-        <el-form-item prop="role" label="角色">
-          <el-select v-model="registerForm.role" placeholder="请选择">
+        <el-form-item prop="role" :error="ErroMessage.role" label="角色">
+          <el-select v-model="registerForm.role" multiple placeholder="请选择">
             <el-option
               v-for="item in role_options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
             </el-option>
           </el-select>
         </el-form-item>
 
         <el-form-item class="btns">
-          <el-button type="success" class="register-btn" @click="register" >提交</el-button>
-          <el-button type="info" class="register-btn" @click="resetregisterForm">重置</el-button>
+          <el-button type="success" class="register-btn" @click="UserRegister" >提交</el-button>
+          <el-button type="info" class="register-btn" @click="ResetRegisterForm">重置</el-button>
         </el-form-item>
 
         <el-form-item class="register-tip">
@@ -68,15 +68,19 @@ import RegValid from '@/assets/js/regValidate.js'
 export default {
   name: 'Register',
   data () {
-    var checkUserName = (rule, value, callback) => {
+    let checkUserName = (rule, value, callback) => {
       if (!RegValid.isUserName(value)) {
         return callback(new Error('用户名格式不正确!  (4到16位 [字母，数字，下划线，减号])'))
+      } else {
+        return callback()
       }
     }
 
-    var checkEmail = (rule, value, callback) => {
+    let checkEmail = (rule, value, callback) => {
       if (!RegValid.isEmail(value)) {
         return callback(new Error('邮箱格式不正确  (用户名@主机名.域名)'))
+      } else {
+        return callback()
       }
     }
 
@@ -87,24 +91,12 @@ export default {
         username: '',
         password: '',
         email: '',
-        department: '',
-        role: ''
+        department: [],
+        role: []
       },
 
-      department_options: [{
-        value: '1',
-        label: 'BMC'
-      }, {
-        value: '2',
-        label: 'BIOS'
-      }],
-      role_options: [{
-        value: '1',
-        label: '管理员'
-      }, {
-        value: '2',
-        label: '用户'
-      }],
+      department_options: '',
+      role_options: '',
 
       // 第一步 定义 rules 对象
       // 第二步 form 表单绑定 rules对象
@@ -128,43 +120,96 @@ export default {
         role: [
           { required: true, message: '请选择你的用户角色', trigger: 'blur' }
         ]
+      },
+      ErroMessage: {
+        username: '',
+        password: '',
+        email: '',
+        department: '',
+        role: ''
       }
     }
   },
+
+  mounted () {
+    console.log('sss')
+    this.getRoleList()
+    this.getDepartMentList()
+  },
   methods: {
     // 重置表单
-    resetregisterForm () {
+    ResetRegisterForm () {
       this.$refs.registerFormRef.resetFields()
     },
-    // 登录
-    register () {
-      this.$refs.registerFormRef.validate(valid => {
+
+    createUser () {
+      console.log('createUser')
+      console.log(this)
+      this.$refs.registerFormRef.validate((valid) => {
+        console.log('valid =>' + valid)
         if (valid) {
-          console.log(this.registerForm)
-          // this.$http.post('register', this.registerForm)
-          //   .then(
-          //     res => {
-          //       console.log(res)
-          //       SS.setUserInfo(res.data)
-          //       this.$message.success('登录成功!')
-          //     })
-          //   .catch(err => {
-          //     switch (err.status) {
-          //       case 400:
-          //         this.$message.error(err.data.non_field_errors[0])
-          //         break
-          //       default:
-          //         this.$message.error('登录时发生未知错误')
-          //     }
-          //   })
+          console.log('验证通过')
+          this.$http.post('users/', this.registerForm)
+            .then(
+              res => {
+                this.$message.success('注册成功!请登录')
+                // setInterval(() => {
+                this.$router.push({ name: 'login' })
+                // }, 2000)
+              })
+            .catch(err => {
+              switch (err.status) {
+                case 400:
+                  for (let key in err.data) {
+                    this.ErroMessage[key] = err.data[key][0]
+                  }
+                  break
+                default:
+                  this.$message.error('登录时发生未知错误')
+              }
+            })
         } else {
           console.log('error submit!!')
           return false
         }
       })
     },
+    // 登录
+    UserRegister () {
+      console.log(this.registerForm)
+
+      this.ErroMessage = {
+        username: '',
+        password: '',
+        email: '',
+        department: '',
+        role: ''
+      }
+      this.createUser()
+    },
     toLogin () {
       this.$router.push({ name: 'login' })
+    },
+
+    getRoleList () {
+      this.$http.get('roles/')
+        .then(
+          res => {
+            this.role_options = res.data
+          })
+        .catch(err => {
+          this.$message.error(err.data)
+        })
+    },
+    getDepartMentList () {
+      this.$http.get('departments/')
+        .then(
+          res => {
+            this.department_options = res.data
+          })
+        .catch(err => {
+          this.$message.error(err.data)
+        })
     }
   }
 }

@@ -1,24 +1,35 @@
 <template>
-  <div class="home">
-    <el-button type="info" @click="logout">
-      退出
-    </el-button>
+  <div>
+    主页
+    描述使用方法
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-
 export default {
-  name: 'home',
-  methods: {
-    logout () {
-      sessionStorage.clear()
-      this.$router.push({ name: 'login' })
-      this.$message.info('当前登录用户已退出')
+  name: 'index',
+  data () {
+    return {
+
     }
   },
+  computed: {
+  },
+  mounted () {
+  },
+  beforeDestroy () {
+  },
+
+  methods: {
+
+  },
   components: {
+
   }
 }
 </script>
+
+<style lang="less" scoped>
+
+</style>

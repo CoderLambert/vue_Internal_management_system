@@ -11,6 +11,7 @@ pbkdf2_sha256_pattern = re.compile(r'pbkdf2_sha256\$180000\$')
 def create_user(sender, instance=None, created=False, **kwargs):
     if created:
         password = instance.password
-        if pbkdf2_sha256_pattern.match(password) is None:
-            instance.set_password(password)
+        # if pbkdf2_sha256_pattern.match(password) is None:
+        instance.set_password(password)
+
         instance.save()

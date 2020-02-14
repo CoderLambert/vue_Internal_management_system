@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django_filters',
     'corsheaders',
     'users.apps.UsersConfig',
+    'project.apps.ProjectConfig',
 ]
 
 MIDDLEWARE = [
@@ -119,7 +120,10 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'zh-hans'
 TIME_ZONE = 'Asia/Shanghai'
 USE_I18N = True
-# USE_L10N = False
+USE_L10N = False
+
+DATE_FORMAT = 'Y-m-d'
+DATETIME_FORMAT = 'Y-m-d H:i:s'
 USE_TZ = True
 
 

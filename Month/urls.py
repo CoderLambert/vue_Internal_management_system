@@ -23,7 +23,11 @@ from rest_framework.documentation import include_docs_urls
 from rest_framework import routers, serializers, viewsets
 from rest_framework_jwt.views import obtain_jwt_token
 
-from users.views import UserViewset
+from users.views import UserViewset,UserOptionViewset,RoleViewset,DepartmentViewset
+
+from project.views import ProjecsListViewSet,ProjecNameListViewSet,RomImagesListViewSet, \
+     MachinesListViewSet
+
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 # Routers provide an easy way of automatically determining the URL conf.
@@ -31,9 +35,38 @@ router = routers.DefaultRouter()
 
 #配置 snippets
 router.register(r'users', UserViewset, basename="users")
+router.register(r'roles', RoleViewset, basename="roles")
+router.register(r'departments', DepartmentViewset, basename="departments")
+router.register(r'images', RomImagesListViewSet, basename="images")
+router.register(r'projects', ProjecsListViewSet, basename="projects")
+router.register(r'project/name', ProjecNameListViewSet, basename="project_name")
+router.register(r'machines', MachinesListViewSet, basename="machines")
 
 users_list = UserViewset.as_view({
     'get': 'list',
+})
+
+roles_list = RoleViewset.as_view({
+    'get': 'list',
+})
+
+departments_list = DepartmentViewset.as_view({
+    'get': 'list',
+})
+
+image_list = RomImagesListViewSet.as_view({
+    'get':'list'
+})
+
+project_list = ProjecsListViewSet.as_view({
+    'get': 'list'
+})
+proname_list = ProjecNameListViewSet.as_view({
+    'get': 'list'
+})
+
+machine_list = MachinesListViewSet.as_view({
+    'get': 'list'
 })
 
 urlpatterns = [
@@ -45,5 +78,4 @@ urlpatterns = [
 
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/login', obtain_jwt_token),
-    # path('', include('snippets.urls')),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -10,7 +10,8 @@ from rest_framework import mixins, viewsets, authentication, permissions, status
 
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework_jwt.serializers import jwt_encode_handler, jwt_payload_handler
-from .serializers import  UserRegSerializer, UserDetailSerializer,UserSerializer
+from .serializers import  UserRegSerializer, UserDetailSerializer,UserOptionListSerializer,RoleSerializer,DepartmentSerializer
+from .models import Role,Department
 # Create your views here.
 
 # 生成一个以当前文件名为名字的logger实例
@@ -22,48 +23,7 @@ User = get_user_model()
 # 手机号码正则表达式
 REGEX_MOBILE = "^1[358]\d{9}$|^147\d{8}$|^176\d{8}$"
 
-class CustomBackend(ModelBackend):
-    """
-    自定义用户验证
-    """
-    def authenticate(self, username=None, password=None, **kwargs):
-
-        if username is None:
-            username = kwargs.get(User.USERNAME_FIELD)
-            if username is None or password is None:
-                return
-            try:
-                user = User._default_manager.get_by_natural_key(username)
-            except User.DoesNotExist:
-                # Run the default password hasher once to reduce the timing
-                # difference between an existing and a nonexistent user (#20760).
-                User().set_password(password)
-            else:
-                if user.check_password(password) and self.user_can_authenticate(user):
-                    return user
-
-    def user_can_authenticate(self, user):
-        """
-        Reject users with is_active=False. Custom user models that don't have
-        that attribute are allowed.
-        """
-        is_active = getattr(user, 'is_active', None)
-        return is_active or is_active is None
-    # def authenticate(self, request, username=None, password=None, **kwargs):
-    #     if username is None:
-    #         username = kwargs.get(User.USERNAME_FIELD)
-    #     if username is None or password is None:
-    #         return
-    #     try:
-    #         user = User._default_manager.get_by_natural_key(username)
-    #     except User.DoesNotExist:
-    #         # Run the default password hasher once to reduce the timing
-    #         # difference between an existing and a nonexistent user (#20760).
-    #         User().set_password(password)
-    #     else:
-    #         if user.check_password(password) and self.user_can_authenticate(user):
-    #             return user
-
+# mixins.DestroyModelMixin,
 class UserViewset(mixins.ListModelMixin,mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
     用户
@@ -73,10 +33,14 @@ class UserViewset(mixins.ListModelMixin,mixins.CreateModelMixin, mixins.UpdateMo
     authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication )
 
     def get_serializer_class(self):
-        if self.action == "retrieve":
-            return UserDetailSerializer
         if self.action == "create":
             return UserRegSerializer
+        if self.action == "list":
+            type = self.request.query_params.get('type')
+            if type == "options":
+                return UserOptionListSerializer
+            else:
+                return UserDetailSerializer
 
         return UserDetailSerializer
 
@@ -94,8 +58,6 @@ class UserViewset(mixins.ListModelMixin,mixins.CreateModelMixin, mixins.UpdateMo
         serializer.is_valid(raise_exception=True)
         user = self.perform_create(serializer)
         re_dict = serializer.data
-        payload = jwt_payload_handler(user)
-        re_dict["token"] = jwt_encode_handler(payload)
         re_dict["username"] = user.username
         re_dict["userid"] = user.id
 
@@ -107,3 +69,40 @@ class UserViewset(mixins.ListModelMixin,mixins.CreateModelMixin, mixins.UpdateMo
 
     def perform_create(self, serializer):
         return serializer.save()
+
+
+class RoleViewset(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    """
+    用户
+    """
+    serializer_class = RoleSerializer
+    queryset = Role.objects.all()
+    authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication )
+    permission_classes = []
+
+class DepartmentViewset(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    """
+    用户
+    """
+    serializer_class = DepartmentSerializer
+    queryset = Department.objects.all()
+    authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication)
+    permission_classes = []
+    # permission_classes = (permissions.IsAuthenticated, )
+
+
+
+class UserOptionViewset(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+    用户选项列表
+    """
+    serializer_class = UserOptionListSerializer
+    queryset = User.objects.all()
+    authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication )
+
+
+
+
+
+
+

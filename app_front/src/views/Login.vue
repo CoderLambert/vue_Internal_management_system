@@ -65,15 +65,16 @@ export default {
                 console.log(res)
                 SS.setUserInfo(res.data)
                 // this.$message.success('登录成功!')
-                this.$router.push({ name: 'home' })
+                this.$router.push({ name: 'Index' })
               })
             .catch(err => {
               switch (err.status) {
                 case 400:
                   this.$message.error(err.data.non_field_errors[0])
                   break
+
                 default:
-                  this.$message.error('登录时发生未知错误')
+                  // this.$message.error('登录时发生未知错误')
               }
             })
         } else {
