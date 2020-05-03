@@ -7,10 +7,10 @@
 
       <el-form ref="loginFormRef" :model="loginForm" :rules="this.LoginRules" label-width="0px" class="login-box-form">
         <el-form-item prop="username">
-          <el-input type="text" v-model="loginForm.username" prefix-icon="icon iconfont icon-user"></el-input>
+          <el-input type="text" v-model.trim="loginForm.username" prefix-icon="icon iconfont icon-user"></el-input>
         </el-form-item>
         <el-form-item prop="password">
-          <el-input type="password" v-model="loginForm.password" prefix-icon="icon iconfont icon-3702mima" @keyup.enter.native="login"></el-input>
+          <el-input type="password" v-model.trim="loginForm.password" prefix-icon="icon iconfont icon-3702mima" @keyup.enter.native="login"></el-input>
         </el-form-item>
         <el-form-item class="btns">
           <el-button type="success" class="login-btn" @click="login" >确认</el-button>
@@ -26,7 +26,7 @@
 
 <script>
 // @ is an alias to /src
-import SS from '@/assets/js/utils.js'
+import { SS } from '@/assets/js/utils.js'
 export default {
   name: 'login',
   data () {

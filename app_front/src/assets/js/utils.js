@@ -17,4 +17,27 @@ var SS = {
   }
 }
 
-export default SS
+var sortByKey = function (arr, key) {
+  let map = {}
+  let dest = []
+  for (let i = 0; i < arr.length; i++){
+      let ai = arr[i]
+      if ( !map[ai[key]] ) {
+          dest.push({
+              [key]: ai[key],
+              data: [ai]
+          })
+          map[ai[key]] = ai
+      } else {
+          for (let j = 0; j < dest.length; j++){
+              let dj = dest[j]
+              if ( dj[key] === ai[key] ){
+                  dj.data.push(ai)
+                  break
+              }
+          }
+      }
+  }
+  return dest
+}
+export { SS, sortByKey }

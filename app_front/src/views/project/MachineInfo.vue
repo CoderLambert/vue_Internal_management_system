@@ -10,8 +10,8 @@
     <el-card class="box-card-box">
 
     <el-row :gutter="10" type="flex" justify="start" class="search-box">
-      <el-col :xs="5" :sm="4" :md="12" :lg="8" :xl="6">
-        <el-input placeholder="搜索内容( BMC IP、主机 IP、所属项目名、备注 )"
+      <el-col :xs="5" :sm="4" :md="12" :lg="12" :xl="11">
+        <el-input placeholder="搜索内容( BMC IP、主机 IP、所属人员、所属项目名、备注 )"
           @clear="MachinesInfo"
           @keyup.enter.native="MachinesInfo"
           v-model="queryInfo.search"
@@ -20,107 +20,10 @@
           <el-button slot="append" icon="el-icon-search" @click="MachinesInfo"></el-button>
         </el-input>
       </el-col>
-
-      <el-col :xs="5" :sm="4" :md="11" :lg="7" :xl="6" :offset=1>
+      <el-col :xs="5" :sm="4" :md="4" :lg="4" :xl="4" :offset=1>
         <el-button type="primary"  @click="showCenterDialogVisible">添加新的机器信息</el-button>
       </el-col>
     </el-row>
-
-      <el-table
-        :data="MachineInfoList"
-        style="width: 100%"
-        :highlight-current-row="true"
-        border
-        stripe
-        :default-sort="{ prop: 'create_time', order: 'descending' }"
-      >
-        <el-table-column label="" type="expand">
-          <template slot-scope="props">
-            <el-form label-position="left" inline class="demo-table-expand">
-              <el-form-item label="">
-                <pre class="image-description">{{ props.row.description }}</pre>
-              </el-form-item>
-            </el-form>
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          prop="project"
-          label="所属项目"
-          width="140"
-          sortable
-        >
-        </el-table-column>
-
-        <el-table-column
-          prop="username"
-          label="所属人员"
-          width="120"
-          sortable
-        >
-        </el-table-column>
-      <el-table-column label="用户名/密码"
-       width="230"
-      >
-        <template slot-scope="scope">
-
-          <el-tooltip content="单击复制用户名" placement="bottom" effect="light">
-
-          <span  v-if="scope.row.web_username"
-
-            v-clipboard:copy="scope.row.web_username"
-            v-clipboard:success="onCopy"
-            v-clipboard:error="onError"
-            class="svn-copy"
-
-          >
-          {{ scope.row.web_username }}
-          </span>
-          </el-tooltip>
-            /
-        <el-tooltip content="单击复制密码" placement="bottom" effect="light">
-          <span  v-if="scope.row.web_password"
-            v-clipboard:copy="scope.row.web_password"
-            v-clipboard:success="onCopy"
-            v-clipboard:error="onError"
-            class="svn-copy"
-          >
-          {{ scope.row.web_password }}
-          </span>
-          </el-tooltip>
-
-        </template>
-      </el-table-column>
-
-        <el-table-column
-          label="BMC IP"
-        >
-        <template slot-scope="scope">
-         <el-row>
-            <el-col :span="12" :offset="2">
-              {{ scope.row.BMC_ip }}
-            </el-col>
-            <el-col :span="10">
-              <el-tooltip content="点击使用 HTTP 协议打开链接" placement="bottom" effect="light">
-                <el-tag size="medium" @click="open_link(`http://${scope.row.BMC_ip}`)" > HTTP </el-tag>
-              </el-tooltip>
-              <el-tooltip content="点击使用 HTTPS 协议打开链接" placement="bottom" effect="light">
-                <el-tag size="medium"  @click="open_link(`https://${scope.row.BMC_ip}`)"> HTTPS </el-tag>
-              </el-tooltip>
-
-            </el-col>
-          </el-row>
-
-        </template>
-
-        </el-table-column>
-        <el-table-column
-          prop="Host_ip"
-          label="主机 IP"
-
-        >
-        </el-table-column>
-      </el-table>
 <el-dialog
   title=" 添加机器信息"
   :visible.sync="centerDialogVisible"
@@ -140,7 +43,7 @@
           :error="ErroMessage.BMC_ip"
           label="BMI IP"
         >
-          <el-input type="text" v-model="machineForm.BMC_ip" ></el-input>
+          <el-input type="text" v-model.trim="machineForm.BMC_ip" ></el-input>
         </el-form-item>
 
         <el-form-item
@@ -148,20 +51,20 @@
           :error="ErroMessage.Host_ip"
           label="主机 IP"
         >
-          <el-input type="text" v-model="machineForm.Host_ip" ></el-input>
+          <el-input type="text" v-model.trim="machineForm.Host_ip" ></el-input>
         </el-form-item>
         <el-form-item
           prop="web_username"
           :error="ErroMessage.web_username"
           label="BMC 默认用户名">
-            <el-input v-model.number="machineForm.web_username"></el-input>
+            <el-input v-model="machineForm.web_username"></el-input>
         </el-form-item>
 
         <el-form-item
          prop="web_password"
          :error="ErroMessage.web_password"
          label="BMC 默认用户密码">
-          <el-input v-model.number="machineForm.web_password"></el-input>
+          <el-input v-model.trim="machineForm.web_password"></el-input>
         </el-form-item>
 
         <el-form-item
@@ -195,10 +98,58 @@
         </el-form-item>
 
         <el-form-item
+          prop="current_state"
+          :error="ErroMessage.current_state"
+          label="当前机器状态"
+        >
+          <el-radio-group v-model="machineForm.current_state" size="medium">
+            <el-radio-button
+              v-for="item in machine_states"
+              :key="item.id"
+              :label="item.id"
+              >
+              {{item.state}}
+            </el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item
+          prop="start_time"
+          v-show='machineForm.current_state!==1&& machineForm.current_state!==""'
+          :error="ErroMessage.start_time"
+          ref="addMachinePickerRef"
+          label="使用开始时间"
+        >
+          <el-date-picker
+            v-model="machineForm.start_time"
+            type="datetime"
+            placeholder="选择起始时间"   
+            align="right"
+            :picker-options="startPickerOptions"     
+          >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item
+          prop="end_time"
+          v-show='machineForm.current_state!==1 && machineForm.current_state!==""'
+          :error="ErroMessage.end_time"
+          label="使用结束时间"
+        >
+          <el-date-picker
+            v-model="machineForm.end_time"
+            type="datetime"
+            placeholder="选择结束时间"
+            align="right"
+            :picker-options="addEndPickerOptions"  
+            >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item
          prop="description"
          :error="ErroMessage.description"
-         label="机器备注">
-          <el-input v-model.number="machineForm.description"></el-input>
+         label="机器备注" 
+         :rows="4"
+         >
+          <el-input type="textarea" v-model="machineForm.description"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitForm('machineFormRef')">提交</el-button>
@@ -207,39 +158,172 @@
       </el-form>
 </el-dialog>
 
-    <el-row :gutter="10" type="flex" justify="center">
-      <el-col :xs="5" :sm="4" :md="16" :lg="8" :xl="6">
-        <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="queryInfo.pagenum"
-          :page-sizes="[5,10, 20, 50, 100, 200]"
-          :page-size="queryInfo.pagesize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total_page">
-        </el-pagination>
-      </el-col>
-    </el-row>
+<el-dialog
+  title=" 修改机器信息"
+  :visible.sync="EditMachineDialogVisible"
+  width="50%"
+  center>
+      <el-form
+        :model="EditMachineForm"
+        status-icon
+        ref="EditMachineFormRef"
+        :rules="this.addMachineRules"
+        v-if='EditMachineDialogVisible'
+        label-width="140px"
+        class="add-project-form"
+      >
+        <el-form-item
+          prop="BMC_ip"
+          :error="ErroMessage.BMC_ip"
+          label="BMI IP"
+        >
+          <el-input type="text" v-model="EditMachineForm.BMC_ip" ></el-input>
+        </el-form-item>
+
+        <el-form-item
+          prop="Host_ip"
+          :error="ErroMessage.Host_ip"
+          label="主机 IP"
+        >
+          <el-input type="text" v-model="EditMachineForm.Host_ip" ></el-input>
+        </el-form-item>
+        <el-form-item
+          prop="web_username"
+          :error="ErroMessage.web_username"
+          label="BMC 默认用户名">
+            <el-input v-model="EditMachineForm.web_username"></el-input>
+        </el-form-item>
+
+        <el-form-item
+         prop="web_password"
+         :error="ErroMessage.web_password"
+         label="BMC 默认用户密码">
+          <el-input v-model="EditMachineForm.web_password"></el-input>
+        </el-form-item>
+
+        <el-form-item
+          prop="user"
+          :error="ErroMessage.user"
+          label="机器所有者"
+        >
+          <el-select filterable  v-model="EditMachineForm.user"  placeholder="请选择">
+            <el-option
+              v-for="item in user_options"
+              :key="item.id"
+              :label="item.username"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item
+          prop="project"
+          :error="ErroMessage.project"
+          label="机器所属项目"
+        >
+          <el-select filterable  v-model="EditMachineForm.project"  placeholder="请选择">
+            <el-option
+              v-for="item in projectOptions"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item
+          prop="current_state"
+          :error="ErroMessage.current_state"
+          label="当前机器状态"
+        >
+          <el-radio-group v-model="EditMachineForm.current_state" size="medium">
+            <el-radio-button
+              v-for="item in machine_states"
+              :key="item.id"
+              :label="item.id"
+              >
+              {{item.state}}
+            </el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+
+        <el-form-item
+          prop="start_time"
+          v-show='EditMachineForm.current_state!==1'
+          :error="ErroMessage.start_time"
+          label="使用开始时间"
+          ref="editMachinePickerRef"
+        >
+          <el-date-picker
+            v-model="EditMachineForm.start_time"
+            type="datetime"
+            placeholder="选择起始时间"  
+            align="right"
+            :picker-options="startPickerOptions"          
+          >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item
+          prop="end_time"
+          v-show='EditMachineForm.current_state!==1'
+          :error="ErroMessage.end_time"
+          label="使用结束时间"
+        >
+          <el-date-picker
+            v-model="EditMachineForm.end_time"
+            type="datetime"
+            placeholder="选择结束时间"
+            align="right"
+            :picker-options="endPickerOptions"  
+            >
+          </el-date-picker>
+        </el-form-item>
+
+        <el-form-item
+         prop="description"
+         :error="ErroMessage.description"
+         label="机器备注">
+          <el-input type="textarea"   :rows="4"
+             v-model="EditMachineForm.description"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="submitEditForm('EditMachineFormRef')">提交</el-button>
+        </el-form-item>
+      </el-form>
+</el-dialog>
+<MachineItem 
+  :MachineInfo = this.MachineInfoList 
+  :MachineStates = this.machine_states
+  @EditMachineInfo='handleEditMachineInfo'
+>
+</MachineItem>
+
     </el-card>
     </div>
 </template>
 <script>
-
+import MachineItem from '@/components/MachineItem.vue'
 export default {
   name: 'MachineInfo',
+  components: { MachineItem },
   data () {
     return {
+      time_range: '',
+      expands: [],
+      expandFunc: '展开所有',
       centerDialogVisible: false,
+      EditMachineDialogVisible: false,
       user_options: [],
       projectOptions: [],
       MachineInfoList: [],
-      total_page: null,
       queryInfo: {
-        search: '',
-        pagenum: 1,
-        pagesize: 20
+        search: ''
       },
-
+      machine_states: [
+        { id: 1, state: '空闲' },
+        { id: 2, state: '可查看' },
+        { id: 3, state: '勿动' }
+      ],
       machineForm: {
         BMC_ip: '',
         Host_ip: '',
@@ -247,7 +331,22 @@ export default {
         web_password: '',
         user: '',
         project: '',
-        description: ''
+        current_state: '',
+        description: '',
+        start_time: '',
+        end_time: ''
+      },
+      EditMachineForm: {
+        BMC_ip: '',
+        Host_ip: '',
+        web_username: '',
+        web_password: '',
+        user: '',
+        project: '',
+        current_state: '',
+        description: '',
+        start_time: '',
+        end_time: ''
       },
       ErroMessage: {
         BMC_ip: '',
@@ -256,36 +355,217 @@ export default {
         web_password: '',
         user: '',
         project: '',
-        description: ''
+        current_state: '',
+        description: '',
+        start_time: '',
+        end_time: ''
       },
       addMachineRules: {
         BMC_ip: [
           { required: true, message: '请输入该机器的BMC IP 信息', trigger: 'blur' }
         ],
-        Host_ip: [
-          // { required: true, message: '项目成员不能为空', trigger: 'change' }
-        ],
-        web_username: [
-          // { required: true, message: '请输入该机器的用户名', trigger: 'blur' }
-          // { validator: checkEmail, trigger: 'blur' }
-        ],
-        web_password: [
-          // { required: true, message: '请选择你所属的部门', trigger: 'blur' }
-        ],
+        Host_ip: [],
+        web_username: [],
+        web_password: [],
         user: [
           { required: true, message: '请选择机器的所有人', trigger: 'change' }
         ],
         project: [
           { required: true, message: '请选择机器的所属项目', trigger: 'change' }
         ],
-        description: [
-          // { required: true, message: '请选择机器的所属项目', trigger: 'blur' }
+        description: [],
+        current_state: [],
+        time_range: []
+      },
+      startPickerOptions: {
+          disabledDate: (time) => {
+            let beginVal = new Date() - 3600 * 1000 * 24
+            if ( beginVal) { 
+                return time.getTime() < beginVal
+            }
+          },
 
-        ]
-      }
+          shortcuts: [
+            {
+              text: '10 分钟后',
+              onClick (picker) {
+                const date = new Date()
+                date.setTime(date.getTime() + 600 * 1000 )
+                picker.$emit('pick', date)
+              }
+            },
+            {
+              text: '20 分钟后',
+              onClick (picker) {
+                const date = new Date()
+                date.setTime(date.getTime() + 600 * 1000 * 2 )
+                picker.$emit('pick', date)
+              }
+            },
+            {
+              text: '30 分钟后',
+              onClick (picker) {
+                const date = new Date()
+                date.setTime(date.getTime() + 600 * 1000 * 2 )
+                picker.$emit('pick', date)
+              }
+            },
+            {
+              text: '1小时后',
+              onClick (picker) {
+                const date = new Date()
+                date.setTime(date.getTime() + 600 * 1000 * 6 )
+                picker.$emit('pick', date)
+              }
+            },
+            {
+              text: '2小时后',
+              onClick (picker) {
+                const date = new Date()
+                date.setTime(date.getTime() + 600 * 1000 * 6 * 2 )
+                picker.$emit('pick', date)
+              }
+            },
+            {
+              text: '6小时后',
+              onClick (picker) {
+                const date = new Date()
+                date.setTime(date.getTime() + 600 * 1000 * 6 * 6)
+                picker.$emit('pick', date)
+              }
+            }, 
+            {
+              text: '12小时后',
+              onClick (picker) {
+                const date = new Date()
+                date.setTime(date.getTime() + 600 * 1000 * 6 * 12)
+                picker.$emit('pick', date)
+              }
+            }
+          ]
+        },
+      addEndPickerOptions: {
+          shortcuts: [
+            {
+              text: '10 分钟',
+              onClick: (picker) => {
+                const date = new Date( this.$refs.addMachinePickerRef.fieldValue )
+                date.setTime(date.getTime() + 600 * 1000 )
+                picker.$emit('pick', date)
+              }
+            },
+            {
+              text: '20 分钟',
+              onClick: (picker) => {
+                const date = new Date( this.$refs.addMachinePickerRef.fieldValue )
+                date.setTime(date.getTime() + 600 * 1000 * 2 )
+                picker.$emit('pick', date)
+              }
+            },
+            {
+              text: '30 分钟',
+              onClick: (picker) => {
+                const date = new Date( this.$refs.addMachinePickerRef.fieldValue )
+                date.setTime(date.getTime() + 600 * 1000 * 2 )
+                picker.$emit('pick', date)
+              }
+            },
+            {
+              text: '1小时',
+              onClick: (picker) => {
+                const date = new Date( this.$refs.addMachinePickerRef.fieldValue )
+                date.setTime(date.getTime() + 600 * 1000 * 6 )
+                picker.$emit('pick', date)
+              }
+            },
+            {
+              text: '2小时',
+              onClick: (picker) => {
+                const date = new Date( this.$refs.addMachinePickerRef.fieldValue )
+                date.setTime(date.getTime() + 600 * 1000 * 6 * 2 )
+                picker.$emit('pick', date)
+              }
+            },
+            {
+              text: '6小时',
+              onClick: (picker) => {
+                const date = new Date( this.$refs.addMachinePickerRef.fieldValue )
+                date.setTime(date.getTime() + 600 * 1000 * 6 * 6)
+                picker.$emit('pick', date)
+              }
+            }, 
+            {
+              text: '12小时',
+              onClick: (picker) => {
+                const date = new Date( this.$refs.addMachinePickerRef.fieldValue )
+                date.setTime(date.getTime() + 600 * 1000 * 6 * 12)
+                picker.$emit('pick', date)
+              }
+            }
+          ]
+        },
+      endPickerOptions: {
+          shortcuts: [
+            {
+              text: '10 分钟',
+              onClick: (picker) => {
+                const date = new Date( this.$refs.editMachinePickerRef.fieldValue )
+                date.setTime(date.getTime() + 600 * 1000 )
+                picker.$emit('pick', date)
+              }
+            },
+            {
+              text: '20 分钟',
+              onClick: (picker) => {
+                const date = new Date( this.$refs.editMachinePickerRef.fieldValue )
+                date.setTime(date.getTime() + 600 * 1000 * 2 )
+                picker.$emit('pick', date)
+              }
+            },
+            {
+              text: '30 分钟',
+              onClick: (picker) => {
+                const date = new Date( this.$refs.editMachinePickerRef.fieldValue )
+                date.setTime(date.getTime() + 600 * 1000 * 2 )
+                picker.$emit('pick', date)
+              }
+            },
+            {
+              text: '1小时',
+              onClick: (picker) => {
+                const date = new Date( this.$refs.editMachinePickerRef.fieldValue )
+                date.setTime(date.getTime() + 600 * 1000 * 6 )
+                picker.$emit('pick', date)
+              }
+            },
+            {
+              text: '2小时',
+              onClick: (picker) => {
+                const date = new Date( this.$refs.editMachinePickerRef.fieldValue )
+                date.setTime(date.getTime() + 600 * 1000 * 6 * 2 )
+                picker.$emit('pick', date)
+              }
+            },
+            {
+              text: '6小时',
+              onClick: (picker) => {
+                const date = new Date( this.$refs.editMachinePickerRef.fieldValue )
+                date.setTime(date.getTime() + 600 * 1000 * 6 * 6)
+                picker.$emit('pick', date)
+              }
+            }, 
+            {
+              text: '12小时',
+              onClick: (picker) => {
+                const date = new Date( this.$refs.editMachinePickerRef.fieldValue )
+                date.setTime(date.getTime() + 600 * 1000 * 6 * 12)
+                picker.$emit('pick', date)
+              }
+            }
+          ]
+        }        
     }
   },
-  components: { },
   created () {},
   mounted () {
     this.MachinesInfo()
@@ -294,27 +574,45 @@ export default {
   },
 
   methods: {
+    handleEditMachineInfo (ev) {
+      this.editMachineInfo(ev)
+    },
+    handleDeleteMachine (ev) {
+      this.removeMachine (ev.id, ev.BMC_ip)
+    },
+    clearExpand () {
+      if (this.expands.length > 0) {
+        this.expands = []
+        this.expandFunc = '全部展开'
+      } else {
+        for (let i = 0; i < this.MachineInfoList.length; i++) {
+          this.expands.push(this.MachineInfoList[i]['id'])
+        }
+        console.log(this.expands)
+        this.expandFunc = '全部收缩'
+      }
+    },
+
     MachinesInfo () {
       this.$http.get('machines/', { params: this.queryInfo })
         .then(
           res => {
-            this.MachineInfoList = res.data.results
-            console.log(res)
-            this.total_page = Number(res.data.count)
+            this.MachineInfoList = res.data
+            // this.total_page = Number(res.data.count)
           })
         .catch(err => {
           this.$message.error(err.data)
         })
     },
 
-    handleCurrentChange (val) {
-      this.queryInfo.pagenum = val
-      this.MachinesInfo()
-    },
-    handleSizeChange (val) {
-      this.queryInfo.pagesize = val
-      this.MachinesInfo()
-    },
+    // handleCurrentChange (val) {
+    //   this.queryInfo.pagenum = val
+    //   this.MachinesInfo()
+    // },
+    // handleSizeChange (val) {
+    //   this.queryInfo.pagesize = val
+    //   this.MachinesInfo()
+    // },
 
     onCopy (e) {
       this.$message.success(`已复制 ${e.text} 到粘贴板`)
@@ -334,8 +632,6 @@ export default {
         .then(
           res => {
             this.user_options = res.data
-            console.log(res)
-            // this.total_page = Number(res.data.count)
           })
         .catch(err => {
           this.$message.error(err.data)
@@ -345,8 +641,6 @@ export default {
         .then(
           res => {
             this.user_options = res.data
-            console.log(res)
-            // this.total_page = Number(res.data.count)
           })
         .catch(err => {
           this.$message.error(err.data)
@@ -368,13 +662,17 @@ export default {
         web_password: '',
         user: '',
         project: '',
+        current_state: '',
         description: ''
       }
-
+      if (this.machineForm.current_state === 1){
+        this.machineForm.start_time = new Date()
+        this.machineForm.end_time = new Date() 
+      }
       this.$refs[formName].validate((valid) => {
         if (valid) {
           // alert('submit!')
-          console.log(this.machineForm)
+          // console.log(this.machineForm)
 
           this.$http.post('machines/', this.machineForm)
             .then(
@@ -389,6 +687,7 @@ export default {
                   web_password: '',
                   user: '',
                   project: '',
+                  current_state: '',
                   description: ''
                 }
               })
@@ -411,15 +710,113 @@ export default {
       })
     },
     resetForm () {
-      this.machineForm = {
+        this.machineForm = {
+          BMC_ip: '',
+          Host_ip: '',
+          web_username: '',
+          web_password: '',
+          user: '',
+          project: '',
+          current_state: '',
+          description: ''
+        }
+    },                                                                                               
+  editMachineInfo ( MachineInfo ) {
+    console.log( MachineInfo )
+    this.EditMachineDialogVisible = true
+    this.UserOptionsInfo ()
+    this.ProjectOptionsInfo()
+    this.EditMachineForm = {
+      id: Number(MachineInfo.id),
+      BMC_ip: MachineInfo.BMC_ip,
+      Host_ip: MachineInfo.Host_ip,
+      web_username: MachineInfo.web_username,
+      web_password: MachineInfo.web_password,
+      user: MachineInfo.userid,
+      project: MachineInfo.project_id,
+      current_state: MachineInfo.current_state,
+      description: MachineInfo.description
+    }
+  },
+  
+  removeMachine ( MachineID, MachineBMCIP ) {
+    // console.log( MachineID )
+    // console.log( MachineBMCIP )
+      this.$confirm('此操作将删除该机器信息, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          this.$http.delete(`machines/` + MachineID + '/').then(() => {
+            this.$message({
+              message: `${MachineBMCIP}  已删除`,
+              type: 'success'
+            })
+            this.queryInfo.pagenum = 1
+            this.MachinesInfo()
+          })
+        })
+    },
+
+    submitEditForm (formName) {
+      this.ErroMessage = {
         BMC_ip: '',
         Host_ip: '',
         web_username: '',
         web_password: '',
         user: '',
         project: '',
-        description: ''
+        description: '',
+        current_state: ''
       }
+
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          // console.log(this.EditProjectForm)
+          this.$http.put(`machines/${this.EditMachineForm.id}/`, this.EditMachineForm)
+            .then(
+              res => {
+                this.$message.success('已更新机器信息!')
+                this.MachinesInfo()
+                this.EditMachineDialogVisible = false
+              })
+            .catch(err => {
+              switch (err.status) {
+                case 400:
+                  for (let key in err.data) {
+                    this.ErroMessage[key] = err.data[key][0]
+                  }
+                  break
+                default:
+
+                  console.log('请求发生未知错误')
+              }
+            })
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
+    ProjectOptionsInfo () {
+      this.$http
+        .get(`project/name`)
+        .then(res => {
+          // console.log(res)
+          this.projectOptions = res.data
+        })
+        .catch(err => {
+          this.$message.error(err.data)
+        })
+    },
+    UserOptionsInfo () {
+      this.$http.get('users/?type=options')
+        .then(
+          res => {
+            this.user_options = res.data
+            console.log(res)
+          })      
     }
 
   },

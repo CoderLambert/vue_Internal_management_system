@@ -13,14 +13,14 @@
         class="register-box-form"
         >
         <el-form-item prop="username" :error="ErroMessage.username" label="用户名">
-          <el-input type="text" v-model="registerForm.username" prefix-icon="icon iconfont icon-user"></el-input>
+          <el-input type="text" v-model.trim="registerForm.username" prefix-icon="icon iconfont icon-user"></el-input>
         </el-form-item>
         <el-form-item prop="password" :error="ErroMessage.password" label="密码">
-          <el-input type="password" v-model="registerForm.password" prefix-icon="icon iconfont icon-3702mima"></el-input>
+          <el-input type="password" v-model.trim="registerForm.password" prefix-icon="icon iconfont icon-3702mima"></el-input>
         </el-form-item>
 
         <el-form-item prop="email" :error="ErroMessage.email" label="邮箱">
-          <el-input type="email" v-model="registerForm.email" prefix-icon="el-icon-message" @keyup.enter.native="register"></el-input>
+          <el-input type="email" v-model.trim="registerForm.email" prefix-icon="el-icon-message" @keyup.enter.native="register"></el-input>
         </el-form-item>
 
         <el-form-item prop="department" :error="ErroMessage.department" label="部门">

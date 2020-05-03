@@ -10,8 +10,11 @@ from rest_framework import mixins, viewsets, authentication, permissions, status
 
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework_jwt.serializers import jwt_encode_handler, jwt_payload_handler
-from .serializers import  UserRegSerializer, UserDetailSerializer,UserOptionListSerializer,RoleSerializer,DepartmentSerializer
-from .models import Role,Department
+from .serializers import UserRegSerializer, UserDetailSerializer, \
+    UserOptionListSerializer, RoleSerializer, \
+    DepartmentSerializer, UserEmailSerializer
+from .models import Role, Department
+
 # Create your views here.
 
 # 生成一个以当前文件名为名字的logger实例
@@ -23,22 +26,26 @@ User = get_user_model()
 # 手机号码正则表达式
 REGEX_MOBILE = "^1[358]\d{9}$|^147\d{8}$|^176\d{8}$"
 
+
 # mixins.DestroyModelMixin,
-class UserViewset(mixins.ListModelMixin,mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class UserViewset(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin,
+                  viewsets.GenericViewSet):
     """
     用户
     """
     serializer_class = UserRegSerializer
     queryset = User.objects.all()
-    authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication )
+    authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication)
 
     def get_serializer_class(self):
-        if self.action == "create":
+        if self.action == "create" or self.action == "update" or self.action == "partial_update":
             return UserRegSerializer
         if self.action == "list":
             type = self.request.query_params.get('type')
             if type == "options":
                 return UserOptionListSerializer
+            if type == "email":
+                return UserEmailSerializer
             else:
                 return UserDetailSerializer
 
@@ -63,13 +70,30 @@ class UserViewset(mixins.ListModelMixin,mixins.CreateModelMixin, mixins.UpdateMo
 
         headers = self.get_success_headers(serializer.data)
         return Response(re_dict, status=status.HTTP_201_CREATED, headers=headers)
-    # 加上会引起每次都返回当前用户结果   查询指定ID时
-    # def get_object(self):
-    #     return self.request.user
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+
+        # 更新时需要设置密码加密
+        if partial:
+            password = serializer.validated_data.pop('password',None)
+            if password is not None:
+                instance.set_password(password)
+
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+
+        instance.set_password(password)
 
     def perform_create(self, serializer):
         return serializer.save()
-
 
 class RoleViewset(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
@@ -77,8 +101,9 @@ class RoleViewset(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
     """
     serializer_class = RoleSerializer
     queryset = Role.objects.all()
-    authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication )
+    authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication)
     permission_classes = []
+
 
 class DepartmentViewset(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
@@ -91,18 +116,10 @@ class DepartmentViewset(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewse
     # permission_classes = (permissions.IsAuthenticated, )
 
 
-
 class UserOptionViewset(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
     用户选项列表
     """
     serializer_class = UserOptionListSerializer
     queryset = User.objects.all()
-    authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication )
-
-
-
-
-
-
-
+    authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication)

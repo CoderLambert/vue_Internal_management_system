@@ -1,7 +1,6 @@
 <template>
       <el-menu
         :default-active="activeIndex"
-        class="el-menu-vertical-demo"
         @select="handleSelect"
         background-color=#333744
         text-color=#fff
@@ -84,8 +83,7 @@ export default {
             { id: 12, name: '机器信息', path: '/project/machine/info', icon: 'el-icon-s-order' }
             // { id: 13, name: 'SVN 信息', path: '/project/svn', icon: 'el-icon-s-order' }
           ]
-        }
-
+        },
         // { id: 3,
         //   name: '开发',
         //   path: '/development',
@@ -101,12 +99,45 @@ export default {
         //   name: '用户',
         //   path: '/user',
         //   icon: 'el-icon-document',
-
         //   sub_menu: [
         //     { id: 41, name: '用户信息', path: '/user/info', icon: 'el-icon-s-cooperation' },
         //     { id: 42, name: '用户权限管理', path: '/user/privilage', icon: 'el-icon-s-cooperation' }
         //   ]
-        // }
+        // },
+
+        { id: 5,
+          name: '文章管理',
+          path: '/article',
+          icon: 'el-icon-document',
+          sub_menu: [
+            // { id: 51, name: '富文本', path: '/article/rich', icon: 'el-icon-s-cooperation' },
+            { id: 51, name: '文章总览', path: '/articles/', icon: 'el-icon-s-cooperation' },
+            { id: 52, name: '添加文章', path: '/article/add/markdown', icon: 'el-icon-s-cooperation' },
+            { id: 53, name: '笔记本', path: '/articles/notes', icon: 'el-icon-s-cooperation' },
+            { id: 54, name: '文章分类', path: '/articles/types', icon: 'el-icon-s-cooperation' }
+          ]
+        },
+        { id: 6,
+          name: '导航',
+          path: '/navigation',
+          icon: 'el-icon-document',
+          sub_menu: [
+            { id: 61, name: '常用网站', path: '/navigation/webside', icon: 'el-icon-s-cooperation' },
+            { id: 62, name: '网站分类', path: '/navigation/webtype', icon: 'el-icon-s-cooperation' }
+            // { id: 63, name: '资源', path: '/navigation/resource', icon: 'el-icon-s-cooperation' }
+          ]
+        },
+        { id: 7,
+          name: '反馈',
+          path: '/suggest',
+          icon: 'el-icon-document',
+          sub_menu: [
+            { id: 71, name: '需求', path: '/suggest/demand', icon: 'el-icon-s-cooperation' }
+            // { id: 72, name: '添加需求', path: '/suggest/demand/add', icon: 'el-icon-s-cooperation' }
+
+          ]
+        }
+
       ]
     }
   },

@@ -10,94 +10,108 @@
       <el-row :gutter="10" type="flex" justify="start" class="search-box">
         <el-col :xs="5" :sm="4" :md="12" :lg="8" :xl="6">
           <el-input
-            placeholder="搜索内容(文件名、文件描述)"
+            placeholder="搜索内容(上传人、文件名、文件描述)"
             @clear="ImagesInfo"
             @keyup.enter.native="ImagesInfo"
             v-model="queryInfo.search"
             clearable
           >
             <el-button slot="append" icon="el-icon-search" @click="ImagesInfo"></el-button>
-
           </el-input>
-
         </el-col>
         <el-col :xs="5" :sm="4" :md="2" :lg="8" :xl="6">
           <el-button type="primary"  @click="clearExpand">{{expandFunc}}</el-button>
         </el-col>
-
       </el-row>
+    <el-tabs>
+        <el-tab-pane  v-for="(projectList,key) in RomImageList"  v-bind:key = "key" :label="key">
+          <el-table
+            :data="projectList"
+            :highlight-current-row="true"
+            stripe
+            row-key="id"
+            :expand-row-keys='expands'
+            :default-sort="{ prop: 'create_time', order: 'descending' }"
+          >
+            <el-table-column label type="expand">
+              <template slot-scope="props">
+                <el-form label-position="left" inline class="demo-table-expand">
+                  <el-form-item label>
+                    <pre class="image-description">{{ props.row.description }}</pre>
+                  </el-form-item>
+                </el-form>
+              </template>
+            </el-table-column>
+            <!-- 索隐列 -->
+            <el-table-column type="index" label="#"></el-table-column>
+                  @click="downloadFun(scope.row.url,scope.row.name)"
+            <el-table-column prop="name" label="镜像">
+              <template slot-scope="scope">
+                <span
+                  class="file-name"
+                  @click="downloadFun(scope.row.url,scope.row.name,scope.row.id)"
 
-      <el-table
-        :data="RomImageList"
-        style="width: 100%"
-        :highlight-current-row="true"
-        border
-        stripe
-        row-key="id"
-        :expand-row-keys='expands'
-        :default-sort="{ prop: 'create_time', order: 'descending' }"
-      >
-        <el-table-column label type="expand">
-          <template slot-scope="props">
-            <el-form label-position="left" inline class="demo-table-expand">
-              <el-form-item label>
-                <pre class="image-description">{{ props.row.description }}</pre>
-              </el-form-item>
-            </el-form>
-          </template>
-        </el-table-column>
-        <!-- 索隐列 -->
-        <!-- <el-table-column type="index" label="#"></el-table-column> -->
+                >
+                  {{ scope.row.name }}
+                </span>
+              </template>
+            </el-table-column>
 
-        <el-table-column prop="project" label="所属项目" sortable width="200"></el-table-column>
+            <el-table-column prop="name" label="Release Note">
+              <template slot-scope="scope">
+                <span
+                  class="file-name"
+                  @click="downloadFun(scope.row.release_note,scope.row.release_note_name,scope.row.id)"
+                >
+                  {{ scope.row.release_note_name }}
+                </span>
+              </template>
+            </el-table-column>
 
-        <el-table-column prop="name" label="文件名" sortable>
-          <template slot-scope="scope">
-            <span
-              class="file-name"
-              @click="downloadFun(scope.row.url,scope.row.name)"
-            >{{ scope.row.name }}</span>
-          </template>
-        </el-table-column>
+            <el-table-column prop="create_time" label="上传时间">
+                <template slot-scope="scope">{{ scope.row.create_time | UTCDateFormat('YYYY-MM-DD HH:mm:ss') }}</template>
+            </el-table-column>
+            <el-table-column prop="username" label="上传人"></el-table-column>
 
-        <el-table-column prop="username" label="上传人" width="150" sortable></el-table-column>
-        <el-table-column prop="create_time" label="上传时间" sortable width="200"></el-table-column>
+            <el-table-column label="操作">
+              <template slot-scope="scope">
+                <!-- <el-button
+                  class="btns"
+                  size="mini"
+                  type="success"
+                  :loading="scope.row.id === current_button"
+                  @click="downloadFun(scope.row.url,scope.row.name,scope.row.id)"
+                >下载</el-button> -->
+                <el-button
+                  type="primary"
+                  size="mini"
+                  icon="el-icon-edit"
+                  circle
+                  @click="editRomImageInfo(scope.row.id,scope.row.project_id, scope.row.description)"
+                ></el-button>
 
-        <el-table-column label="操作" width="180">
-          <template slot-scope="scope">
-            <el-button
-              class="btns"
-              size="mini"
-              type="success"
-              @click="downloadFun(scope.row.url)"
-            >下载</el-button>
-            <el-button
-              type="primary"
-              size="mini"
-              icon="el-icon-edit"
-              circle
-              @click="editRomImageInfo(scope.row.id,scope.row.project_id, scope.row.description)"
-            ></el-button>
+                <el-button
+                  type="danger"
+                  size="mini"
+                  icon="el-icon-delete"
+                  circle
+                  @click="removeRomImage(scope.row.id, scope.row.name)"
+                ></el-button>
+              </template>
+            </el-table-column>
+          </el-table> 
 
-            <el-button
-              type="danger"
-              size="mini"
-              icon="el-icon-delete"
-              circle
-              @click="removeRomImage(scope.row.id, scope.row.name)"
-            ></el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+        </el-tab-pane>
+    </el-tabs>
 
       <el-dialog title=" 更改文件信息" :visible.sync="editFormVisible" width="50%" center>
-        <!-- :rules="this.editFormRules" -->
 
         <el-form
           :model="editForm"
           status-icon
           ref="editFormRef"
           v-if="editFormVisible"
+          :rules="this.editFormRules"
           label-width="140px"
         >
           <el-form-item prop="project" label="文件所属项目">
@@ -110,10 +124,13 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <!-- :error="editFormRules.description" -->
 
           <el-form-item prop="description" label="文件备注">
-            <el-input type="text" v-model="editForm.description"></el-input>
+            <el-input 
+              type="textarea"
+              :rows="2" 
+              v-model="editForm.description">
+            </el-input>
           </el-form-item>
 
           <el-form-item>
@@ -122,24 +139,11 @@
           </el-form-item>
         </el-form>
       </el-dialog>
-
-      <el-row :gutter="10" type="flex" justify="center">
-        <el-col :xs="5" :sm="4" :md="16" :lg="8" :xl="6">
-          <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page="queryInfo.pagenum"
-            :page-sizes="[5,10, 20, 50, 100, 200]"
-            :page-size="queryInfo.pagesize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="total_page"
-          ></el-pagination>
-        </el-col>
-      </el-row>
     </el-card>
   </div>
 </template>
 <script>
+import { saveAs } from 'file-saver'
 export default {
   name: 'ImageInfo',
   data () {
@@ -158,10 +162,9 @@ export default {
       RomImageList: [],
       total_page: null,
       queryInfo: {
-        search: '',
-        pagenum: 1,
-        pagesize: 20
+        search: ''
       }
+      // current_button: -1
     }
   },
   components: {},
@@ -170,23 +173,14 @@ export default {
     this.ImagesInfo()
   },
   beforeDestroy () {},
-  // computed: {
-  // 计算属性的 getter
-  // expandRows: function () {
-  //   // `this` 指向 vm 实例
 
-  //   return this.message.split('').reverse().join('')
-  // }
-  // },
   methods: {
-
     clearExpand () {
       if (this.expands.length > 0) {
         this.expands = []
         this.expandFunc = '全部展开'
       } else {
         for (let i = 0; i < this.RomImageList.length; i++) {
-          // console.log(key + '---' + obj[key])
           this.expands.push(this.RomImageList[i]['id'])
         }
         this.expandFunc = '全部收缩'
@@ -197,26 +191,12 @@ export default {
       this.$http
         .get('images/', { params: this.queryInfo })
         .then(res => {
-          this.RomImageList = res.data.results
-
-          console.log(res)
-          this.total_page = Number(res.data.count)
+          this.RomImageList = this._.groupBy(res.data, 'project') 
         })
-        // .catch(err => {
-        //   this.$message.error(err.data)
-        // })
     },
 
-    handleCurrentChange (val) {
-      this.queryInfo.pagenum = val
-      this.ImagesInfo()
-    },
-    handleSizeChange (val) {
-      this.queryInfo.pagesize = val
-      this.ImagesInfo()
-    },
-    downloadFun (fileUrl, fileName) {
-      window.open(fileUrl, '_blank')
+    downloadFun (fileUrl, fileName, fileID) {
+      saveAs(fileUrl, fileName)
     },
     ProjectOptionsInfo () {
       this.$http
@@ -235,7 +215,6 @@ export default {
         project: Number(RomProject),
         description: RomDescription
       }
-      // console.log(this.editForm)
       this.ProjectOptionsInfo()
       this.editFormVisible = true
     },
@@ -284,9 +263,7 @@ export default {
           })
         })
     }
-  },
-
-  computed: {}
+  }
 }
 </script>
 <style lang="less" scoped>

@@ -41,8 +41,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'corsheaders',
+    'mptt',
     'users.apps.UsersConfig',
     'project.apps.ProjectConfig',
+    'articals.apps.ArticalsConfig',
+    'support.apps.SupportConfig'
 ]
 
 MIDDLEWARE = [
@@ -118,13 +121,15 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 # 设置时区，语言
 LANGUAGE_CODE = 'zh-hans'
-TIME_ZONE = 'Asia/Shanghai'
-USE_I18N = True
-USE_L10N = False
-
-DATE_FORMAT = 'Y-m-d'
-DATETIME_FORMAT = 'Y-m-d H:i:s'
 USE_TZ = True
+
+TIME_ZONE = 'UTC'
+
+# USE_I18N = True
+# USE_L10N = True
+
+# DATE_FORMAT = 'Y-m-d'
+# DATETIME_FORMAT = 'Y-m-d H:i:s'
 
 
 
@@ -161,7 +166,7 @@ REST_FRAMEWORK = {
 
 import datetime
 JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
     'JWT_AUTH_HEADER_PREFIX': 'JWT',
     'JWT_RESPONSE_PAYLOAD_HANDLER': 'users.utils.jwt_response_payload_handler'
 }
@@ -173,18 +178,18 @@ CORS_ORIGIN_WHITELIST = ()
 CORS_ORIGIN_ALLOW_ALL = True
 
 CORS_ALLOW_HEADERS = (
-'x-requested-with',
-'content-type',
-'accept',
-'origin',
-'authorization',
-'x-csrftoken',
-'token',
-'x-device-id',
-'x-device-type',
-'x-push-id',
-'dataserviceversion',
-'maxdataserviceversion'
+    'x-requested-with',
+    'content-type',
+    'accept',
+    'origin',
+    'authorization',
+    'x-csrftoken',
+    'token',
+    'x-device-id',
+    'x-device-type',
+    'x-push-id',
+    'dataserviceversion',
+    'maxdataserviceversion'
 )
 
 CORS_ALLOW_METHODS = (
@@ -196,3 +201,20 @@ CORS_ALLOW_METHODS = (
     'OPTIONS',
 )
 AUTH_USER_MODEL = 'users.UserProfile'
+EMAIL_HOST = "smtp.163.com"  #smtp 服务器域名
+EMAIL_PORT = 25
+EMAIL_HOST_USER = "l156486648@163.com" #用户名
+EMAIL_HOST_PASSWORD = "XDBMWWIXQXNTNETB"
+EMAIL_USE_TLS= False
+EMAIL_FROM = "l156486648@163.com"
+DEFAULT_FROM_EMAIL = "l156486648@163.com"
+
+
+# AUTH_USER_MODEL = 'users.UserProfile'
+# EMAIL_HOST = "m.cancon.com.cn"  #smtp 服务器域名
+# EMAIL_PORT = 25
+# EMAIL_HOST_USER = "lizhi1@cancon.com.cn" #用户名
+# EMAIL_HOST_PASSWORD = "ks!lizhi1"
+# EMAIL_USE_TLS = False
+# EMAIL_FROM = "lizhi1@cancon.com.cn"
+# DEFAULT_FROM_EMAIL = "lizhi1@cancon.com.cn"

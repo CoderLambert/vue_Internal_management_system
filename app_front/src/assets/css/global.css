@@ -3,6 +3,7 @@ html,body,#app{
     margin: 0;
     padding: 0%;
     min-width: 1366px;
+    overflow: hidden;
 }
 
 .box-card-box{
@@ -16,4 +17,23 @@ html,body,#app{
     cursor: pointer;
     height: 100%;
     font-size:14px
+}
+
+.v-note-wrapper {
+    border: 0 !important;
+}
+
+/* .v-note-panel {
+    border: none !important;
+} */
+
+/* .v-show-content {
+    background-color: white !important;
+} */
+/* .v-show-content>h2:first-child {
+    margin-top: 0px !important;
+} */
+.markdown-body pre  {
+    font-size: 1.35em !important;
+    line-height: 1.45 !important;
 }
