@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        html body {
+            margin: 0;
+            padding: 0;
+            background-color:#fffff0;
+            width: 100%;
+        }
+        h2 {
+            color: #1C1C1C;
+            border: 1px solid #9C9C9C;
+            background: #E8E8E8;
+            line-height: 40px;
+            padding: 10px;
+            text-align: center;
+        }
+        .download-link {
+            text-decoration: none;
+            text-decoration: none;
+            font-weight: 600;
+            color: #1E90FF;
+            font-size: 24px;
+        }
+        .mail-box{
+            width: 1000px;
+            margin: 0 auto;
+            box-sizing: border-box;
+            padding:0 50px 0 50px;
+            background-color:#fff;
+            border: 1px solid #ddd9d9;
+        }
+        .relase-content {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .file-list {
+            margin-block-start: 0;
+            font-size: 24px;
+        }
+        .file-item {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div style="width:100%;background-color:#fffff0;">
+        <div class="mail-box">
+            <h2> Release Note 详情</h2>
+            <pre class="relase-content">{{release_note_text}}</pre>
+            <br>
+            <h2>文件下载地址</h2>
+            <!--<a href={{image_link}}>{{image_name}} </a>-->
+            <!--<h2>Release Note下载地址:</h2>-->
+            <!--<a href={{release_note_link}}>{{release_note_name}} </a>-->
+
+            <ol class="file-list">
+               <li class="file-item">
+                 <a class="download-link" href={{image_link}}> {{image_name}} </a>
+               </li>
+
+                <li class="file-item">
+                 <a class="download-link" href={{release_note_link}}> {{release_note_name}} </a>
+               </li>
+
+           </ol>
+        </div>
+    </div>
+</body>
+</html>

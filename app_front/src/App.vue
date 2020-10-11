@@ -2,15 +2,9 @@
   <div id="app">
     <!-- <router-view></router-view> -->
     <!-- <transition  name="transitionRouter" mode="out-in"> -->
-      <router-view v-if="!$route.meta.keepAlive"></router-view>
+      <router-view></router-view>
     <!-- </transition> -->
     <!-- keep alive 原理是啥 -->
-    <keep-alive>
-      <!-- <transition  name="transitionRouter" mode="out-in"> -->
-        <router-view v-if="$route.meta.keepAlive"></router-view>
-      <!-- </transition> -->
-    </keep-alive>
-
   </div>
 </template>
 

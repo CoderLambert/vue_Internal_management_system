@@ -57,12 +57,12 @@ export default {
     return {
       activeIndex: '/',
       menu_list: [
-        { id: 0,
-          name: '首页',
-          path: '/',
-          icon: 'el-icon-s-home',
-          sub_menu: null
-        },
+        // { id: 0,
+        //   name: '首页',
+        //   path: '/',
+        //   icon: 'el-icon-s-home',
+        //   sub_menu: null
+        // },
 
         { id: 1,
           name: '镜像管理',

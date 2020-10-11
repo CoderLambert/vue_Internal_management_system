@@ -40,4 +40,26 @@ var sortByKey = function (arr, key) {
   }
   return dest
 }
-export { SS, sortByKey }
+
+var treeShip = function ( dataList ) {
+  var msg_list_dict = {}
+  dataList.forEach( item => {
+      msg_list_dict[item['id']] = item
+  })
+
+  var result = []
+  dataList.forEach ( (item) => {
+      var pid = item['parent']
+      if (pid) {
+          if (!msg_list_dict[pid].hasOwnProperty('children')) {
+            msg_list_dict[pid]['children'] = []
+          }
+          msg_list_dict[pid]['children'].push(item)
+      } else {
+          result.push(item)
+      }
+  })
+  return result
+}
+
+export { SS, sortByKey, treeShip }

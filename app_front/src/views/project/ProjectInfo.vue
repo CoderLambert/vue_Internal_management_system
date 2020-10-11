@@ -375,13 +375,7 @@ export default {
       this.queryInfo.pagesize = val
       this.ProjectsInfo()
     },
-    // handleClose (done) {
-    //   this.$confirm('确认关闭？')
-    //     .then(_ => {
-    //       done()
-    //     })
-    //     .catch(_ => {})
-    // },
+
     onCopy (e) {
       this.$message.success(`已复制 ${e.text} 到粘贴板`)
     },

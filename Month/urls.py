@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.conf import settings
 from django.contrib import admin
-from django.urls import path,include
+from django.urls import path,re_path,include
 from django.conf.urls.static import static
 from django.views.generic import TemplateView
 
@@ -104,11 +104,13 @@ articles_list = ArticaleListViewSet.as_view({
 })
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', TemplateView.as_view(template_name="index.html"), name='index'),
     # path('api/delete/image/',MetaImageView.as_view(),name='delete_image'),
     path('api/', include(router.urls)),
     path('docs/', include_docs_urls(title="Beyond PLM")),
 
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/login', obtain_jwt_token),
+    path('', TemplateView.as_view(template_name="index.html"), name='index'),
+    # re_path(r'.*', TemplateView.as_view(template_name='index.html'), name='index')
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

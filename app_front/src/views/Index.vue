@@ -9,9 +9,13 @@
             <a :href="doc_link" v-if="username=='lambert'" target="_blank" >api 文档</a>
 
           <span class="user-info-name">当前用户: {{ username }}</span>
-          <el-button type="user-info-logout" @click="logout">
+          <el-button type="user-info-logout" v-if="username !== '游客'"  @click="logout">
             退出
           </el-button>
+          <el-button type="user-info-logout" v-else  @click="login">
+            登录
+          </el-button>
+
         </div>
       </el-header>
 
@@ -21,28 +25,9 @@
           <Menu  v-bind:isCollapse="this.isCollapse "></Menu>
         </el-aside>
         <el-main>        <!--路由占位符-->
-        <router-view>
+          <router-view>
           </router-view>
           <template>
-            <!-- <el-backtop target=".cs-bottom" :bottom="100">
-              <div
-                style="{
-                  height: 150px;
-                  width: 150px;
-                  background-color: #f2f5f6;
-                  box-shadow: 0 0 6px rgba(0,0,0, .12);
-                  text-align: center;
-                  line-height: 40px;
-                  color: #1989fa;
-                  border 1px solid
-                }"
-              >
-              
-               <i class="el-icon-top"></i> -->
-              <!-- 到达底部
-             </div>
-            </el-backtop> --> 
-
             <el-backtop target=".el-main" :bottom="100">
               <div
                 style="{
@@ -59,7 +44,6 @@
               返回顶部
              </div>
             </el-backtop>
-
           </template>
         </el-main>
       </el-container>
@@ -77,7 +61,7 @@ export default {
     return {
       asideWidth: '200px',
       isCollapse: false,
-      username: sessionStorage.getItem('username'),
+      username: sessionStorage.getItem('username') ? sessionStorage.getItem('username') : '游客',
       doc_link: `http://${window.location.host}/docs/`,
       api_link: `http://${window.location.host}/admin/`
     }
@@ -103,7 +87,9 @@ export default {
       this.$router.push({ name: 'login' })
       this.$message.info('当前登录用户已退出')
     },
-
+    login () {
+      this.$router.push({ path: '/login' })
+    },
     toogleCollapse () {
       this.isCollapse = !this.isCollapse
       this.asideWidth = this.isCollapse ? '64px' : '200px'
@@ -150,29 +136,6 @@ export default {
   }
   .el-aside{
     background-color: #333744;
-    // height: 100vh;
-    // overflow-y: scroll;
-    // &::-webkit-scrollbar {
-    //     /*滚动条整体样式*/
-    //     width: 2px;
-    //     /*高宽分别对应横竖滚动条的尺寸*/
-    //     height: 4px;
-    // }
-
-    // &::-webkit-scrollbar-thumb {
-    //     /*滚动条里面小方块*/
-    //     border-radius: 5px;
-    //     height: 60px;
-    //     -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-    //     background: #333744;
-    // }
-
-    // &::-webkit-scrollbar-track {
-    //     /*滚动条里面轨道*/
-    //     -webkit-box-shadow: inset 0 0 5px rgb(255, 255, 255);
-    //     border-radius: 0;
-    //     background: rgba(0, 0, 0, 0.1);
-    // }
   }
   .el-main{
     background-color: #EAEDF1;
@@ -201,19 +164,6 @@ export default {
     }
 
   }
-/* To style the document scrollbar, remove `.custom-scrollbar` */
-// .el-main::-webkit-scrollbar {
-//   width: 8px;
-// }
-// .el-main::-webkit-scrollbar-track {
-//   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-//   border-radius: 10px;
-// }
-// .el-main::-webkit-scrollbar-thumb {
-//   border-radius: 10px;
-//   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
-// }
-
   .el-menu{
     border: 0
   }

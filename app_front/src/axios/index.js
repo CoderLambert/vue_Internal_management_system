@@ -36,11 +36,11 @@ instance.interceptors.response.use(undefined, error => {
   try {
     if (res.status) {
       switch (res.status) {
-        case 400:
-        //   SS.clearAll()
-        //   console.log('登录失败，请检查密码或用户名是否正确')
-          Message.error('操作发生错误')
-          break
+        // case 400:
+        // //   SS.clearAll()
+        // //   console.log('登录失败，请检查密码或用户名是否正确')
+        //   Message.error('操作发生错误')
+        //   break
         case 401:
           SS.clearAll()
           Message.error('无法验证身份信息，请重新登录！')
@@ -61,7 +61,8 @@ instance.interceptors.response.use(undefined, error => {
   
     return Promise.reject(error.response) // 返回接口返回的错误信息    
   } catch (error) {
-    return error
+    // return error
+    return Promise.reject(error) // 返回接口返回的错误信息    
   }
 })
 export default instance

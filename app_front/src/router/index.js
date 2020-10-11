@@ -5,7 +5,7 @@ import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 
 import Index from '../views/Index.vue'
-import Home from '../views/Home.vue'
+// import Home from '../views/Home.vue'
 
 import ImageUpload from '../views/image/Upload.vue'
 
@@ -28,7 +28,7 @@ import WebSideType from '../views/navigation/WebSideType.vue'
 import Demand from '../views/suggest/DemandList.vue'
 import AddDemand from '../views/suggest/AddDemand.vue'
 
-import NotFound from '../views/404.vue'
+// import NotFound from '../views/404.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -53,24 +53,24 @@ const routes = [
       // { path: '/navigation/resource', component: () => import('../views/navigation/CloundResource.vue'), name: 'CloundResource' }
       // { path: '/navigation/resource', component: () => import('@/components/draggable.vue'), name: 'CloundResource' }
 
-      { path: '/home', component: Home, name: 'Home' },
+      // { path: '/home', component: Home, name: 'Home' },
       // { path: '/user/info', component: ImageUpload, name: 'UserInfo' },
-      { path: '/image/upload', component: ImageUpload, name: 'ImageUpload' },
-      { path: '/image/info', component: ImageInfo, name: 'ImageInfo' },
-      { path: '/project/info', component: ProjectInfo, name: 'ProjectInfo' },
-      { path: '/project/machine/info', component: MachineInfo, name: 'MachineInfo' },
+      { path: '/image/upload', component: ImageUpload, name: 'ImageUpload', meta: { requiresAuth: true } },
+      { path: '/image/info', component: ImageInfo, name: 'ImageInfo', meta: { requiresAuth: true } },
+      { path: '/project/info', component: ProjectInfo, name: 'ProjectInfo', meta: { requiresAuth: true } },
+      { path: '/project/machine/info', component: MachineInfo, name: 'MachineInfo', meta: { requiresAuth: true } },
       // meta: { keepAlive: true } 
-      { path: '/articles/', component: Articles, name: 'Articles' },
-      { path: '/article/:artical_id', component: ArticalDetail, name: 'ArticalDetail' },
-      { path: '/article/add/markdown', component: AddMarkdown, name: 'AddMarkdown' },
-      { path: '/article/edit/markdown/:artical_id', component: EditMarkdown, name: 'EditMarkdown' },
-      { path: '/articles/notes', component: ArticaleNotes, name: 'ArticaleNotes' },
-      { path: '/articles/types', component: ArticaleTypes, name: 'ArticaleTypes' },
-      { path: '/navigation/webside', component: WebSite, name: 'WebSite' },
-      { path: '/navigation/webtype', component: WebSideType, name: 'WebSiteType' },
-      { path: '/suggest/demand', component: Demand, name: 'Demand' },
-      { path: '/suggest/demand/add', component: AddDemand, name: 'AddDemand' },
-      { path: '*', component: NotFound, name: 'NotFound' }
+      { path: '/articles/', component: Articles, name: 'Articles', meta: { requiresAuth: false } },
+      { path: '/article/:artical_id', component: ArticalDetail, name: 'ArticalDetail', meta: { requiresAuth: false } },
+      { path: '/article/add/markdown', component: AddMarkdown, name: 'AddMarkdown', meta: { requiresAuth: true } },
+      { path: '/article/edit/markdown/:artical_id', component: EditMarkdown, name: 'EditMarkdown', meta: { requiresAuth: true } },
+      { path: '/articles/notes', component: ArticaleNotes, name: 'ArticaleNotes', meta: { requiresAuth: true } },
+      { path: '/articles/types', component: ArticaleTypes, name: 'ArticaleTypes', meta: { requiresAuth: true } },
+      { path: '/navigation/webside', component: WebSite, name: 'WebSite', meta: { requiresAuth: false } },
+      { path: '/navigation/webtype', component: WebSideType, name: 'WebSiteType', meta: { requiresAuth: false } },
+      { path: '/suggest/demand', component: Demand, name: 'Demand', meta: { requiresAuth: false } },
+      { path: '/suggest/demand/add', component: AddDemand, name: 'AddDemand', meta: { requiresAuth: false } },
+      { path: '*', redirect: '/articles/' }
       
     ]
 
@@ -79,6 +79,7 @@ const routes = [
 ]
 
 const router = new VueRouter({
+  // mode: 'history',
   routes
 })
 
@@ -88,17 +89,25 @@ router.beforeEach((to, from, next) => {
 // from 代表从哪个路径跳转而来
 // next是一个函数，代表放行
 //  next()代表放行  next('/login') 强制跳转
+// console.log('start')
+// console.log(new Date())
 
   if (to.path === '/login' || to.path === '/register') {
     next()
   } else {
-    let token = window.sessionStorage.getItem('token')
-    if (!token) {
-      return next('/login')
+    if (to.matched.some(record => record.meta.requiresAuth)) {
+      let token = window.sessionStorage.getItem('token')
+      if (!token) {
+        return next('/login')
+      } else {
+        next()
+      }
     } else {
       next()
     }
   }
+  // console.log('--ebd----')
+  // console.log(new Date())
 })
 
 export default router

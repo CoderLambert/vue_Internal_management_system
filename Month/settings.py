@@ -203,18 +203,8 @@ CORS_ALLOW_METHODS = (
 AUTH_USER_MODEL = 'users.UserProfile'
 EMAIL_HOST = "smtp.163.com"  #smtp 服务器域名
 EMAIL_PORT = 25
-EMAIL_HOST_USER = "l156486648@163.com" #用户名
-EMAIL_HOST_PASSWORD = "XDBMWWIXQXNTNETB"
+EMAIL_HOST_USER = "xxxx" #用户名
+EMAIL_HOST_PASSWORD = "xxxx"  #邮箱授权码
 EMAIL_USE_TLS= False
-EMAIL_FROM = "l156486648@163.com"
-DEFAULT_FROM_EMAIL = "l156486648@163.com"
-
-
-# AUTH_USER_MODEL = 'users.UserProfile'
-# EMAIL_HOST = "m.cancon.com.cn"  #smtp 服务器域名
-# EMAIL_PORT = 25
-# EMAIL_HOST_USER = "lizhi1@cancon.com.cn" #用户名
-# EMAIL_HOST_PASSWORD = "ks!lizhi1"
-# EMAIL_USE_TLS = False
-# EMAIL_FROM = "lizhi1@cancon.com.cn"
-# DEFAULT_FROM_EMAIL = "lizhi1@cancon.com.cn"
+EMAIL_FROM = "xxxx"
+DEFAULT_FROM_EMAIL = "xxxx"

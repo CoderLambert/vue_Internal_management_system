@@ -2,6 +2,7 @@ import instance from '@/axios'
 
 // 获取用户选项
 export const getUserOptions = () => { return instance.get('users/?type=options') }
+export const getAllUsers = () => { return instance.get('users/') }
 
 // 获取用户邮箱信息
 export const getUserEmail = () => { return instance.get(`/users/?type=email`) }
